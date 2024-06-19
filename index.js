@@ -53,6 +53,29 @@ const resolvers = {
       db.games = db.games.filter((g) => g.id !== args.id);
       return db.games;
     },
+
+    addGame(_, args) {
+      let game = {
+        ...args.game,
+        id: Math.floor(Math.random() * 10000).toString(), // Ensure unique ID generation
+      };
+      db.games.push(game);
+      return game;
+    },
+
+    updateGame(_, args) {
+      // Update db.games by mapping over it and modifying the game that matches the id
+      db.games = db.games.map((g) => {
+        if (g.id === args.id) {
+          // Check if the current game's id matches the provided id
+          return { ...g, ...args.edits }; // Merge edits into the existing game object
+        }
+        return g; // Return the game unchanged if it does not match the id
+      });
+
+      // Return the updated game, or null if it wasn't found
+      return db.games.find((g) => g.id === args.id) || null;
+    },
   },
 };
 
